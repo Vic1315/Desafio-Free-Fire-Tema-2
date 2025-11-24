@@ -1,0 +1,120 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+// Definição da struct Item
+typedef struct {
+    char nome[30];
+    char tipo[20];
+    int quantidade;
+} Item;
+
+// Vetor de structs para armazenar os itens
+Item mochila[10];
+int quantidadeItens = 0;
+
+// Função para inserir um item na mochila
+void inserirItem() {
+    if (quantidadeItens < 10) {
+        printf("Digite o nome do item: ");
+        fgets(mochila[quantidadeItens].nome, sizeof(mochila[quantidadeItens].nome), stdin);
+        mochila[quantidadeItens].nome[strcspn(mochila[quantidadeItens].nome, "\n")] = 0;
+
+        printf("Digite o tipo do item (arma, munição, cura): ");
+        fgets(mochila[quantidadeItens].tipo, sizeof(mochila[quantidadeItens].tipo), stdin);
+        mochila[quantidadeItens].tipo[strcspn(mochila[quantidadeItens].tipo, "\n")] = 0;
+
+        printf("Digite a quantidade do item: ");
+        scanf("%d", &mochila[quantidadeItens].quantidade);
+        getchar(); // Limpa o buffer do teclado
+
+        quantidadeItens++;
+        printf("Item inserido com sucesso!\n");
+    } else {
+        printf("Mochila cheia!\n");
+    }
+}
+
+// Função para remover um item da mochila
+void removerItem() {
+    char nome[30];
+    printf("Digite o nome do item a ser removido: ");
+    fgets(nome, sizeof(nome), stdin);
+    nome[strcspn(nome, "\n")] = 0;
+
+    for (int i = 0; i < quantidadeItens; i++) {
+        if (strcmp(mochila[i].nome, nome) == 0) {
+            for (int j = i; j < quantidadeItens - 1; j++) {
+                mochila[j] = mochila[j + 1];
+            }
+            quantidadeItens--;
+            printf("Item removido com sucesso!\n");
+            return;
+        }
+    }
+    printf("Item não encontrado!\n");
+}
+
+// Função para listar os itens da mochila
+void listarItens() {
+    if (quantidadeItens == 0) {
+        printf("Mochila vazia!\n");
+    } else {
+        printf("Itens da mochila:\n");
+        for (int i = 0; i < quantidadeItens; i++) {
+            printf("Nome: %s, Tipo: %s, Quantidade: %d\n", mochila[i].nome, mochila[i].tipo, mochila[i].quantidade);
+        }
+    }
+}
+
+// Função para buscar um item na mochila
+void buscarItem() {
+    char nome[30];
+    printf("Digite o nome do item a ser buscado: ");
+    fgets(nome, sizeof(nome), stdin);
+    nome[strcspn(nome, "\n")] = 0;
+
+    for (int i = 0; i < quantidadeItens; i++) {
+        if (strcmp(mochila[i].nome, nome) == 0) {
+            printf("Item encontrado: Nome: %s, Tipo: %s, Quantidade: %d\n", mochila[i].nome, mochila[i].tipo, mochila[i].quantidade);
+            return;
+        }
+    }
+    printf("Item não encontrado!\n");
+}
+
+int main() {
+    int opcao;
+    do {
+        printf("1 - Inserir item\n");
+        printf("2 - Remover item\n");
+        printf("3 - Listar itens\n");
+        printf("4 - Buscar item\n");
+        printf("5 - Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+        getchar(); // Limpa o buffer do teclado
+
+        switch (opcao) {
+            case 1:
+                inserirItem();
+                break;
+            case 2:
+                removerItem();
+                break;
+            case 3:
+                listarItens();
+                break;
+            case 4:
+                buscarItem();
+                break;
+            case 5:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida!\n");
+        }
+    } while (opcao != 5);
+
+    return 0;
+}

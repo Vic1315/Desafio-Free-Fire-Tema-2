@@ -1,0 +1,183 @@
+vetor.c
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+// Definição da struct Item
+typedef struct {
+    char nome[30];
+    char tipo[20];
+    int quantidade;
+} Item;
+
+// Vetor de structs para armazenar os itens
+Item mochilaVetor[10];
+int quantidadeItensVetor = 0;
+int comparacoesVetor = 0;
+
+// Função para inserir um item no vetor
+void inserirItemVetor(Item item) {
+    if (quantidadeItensVetor < 10) {
+        mochilaVetor[quantidadeItensVetor] = item;
+        quantidadeItensVetor++;
+    }
+}
+
+// Função para remover um item do vetor
+void removerItemVetor(char* nome) {
+    for (int i = 0; i < quantidadeItensVetor; i++) {
+        if (strcmp(mochilaVetor[i].nome, nome) == 0) {
+            for (int j = i; j < quantidadeItensVetor - 1; j++) {
+                mochilaVetor[j] = mochilaVetor[j + 1];
+            }
+            quantidadeItensVetor--;
+            return;
+        }
+    }
+}
+
+// Função para ordenar o vetor
+void ordenarVetor() {
+    for (int i = 0; i < quantidadeItensVetor - 1; i++) {
+        for (int j = i + 1; j < quantidadeItensVetor; j++) {
+            if (strcmp(mochilaVetor[i].nome, mochilaVetor[j].nome) > 0) {
+                Item temp = mochilaVetor[i];
+                mochilaVetor[i] = mochilaVetor[j];
+                mochilaVetor[j] = temp;
+            }
+        }
+    }
+}
+
+// Função para buscar um item no vetor (busca sequencial)
+int buscarSequencialVetor(char* nome) {
+    comparacoesVetor = 0;
+    for (int i = 0; i < quantidadeItensVetor; i++) {
+        comparacoesVetor++;
+        if (strcmp(mochilaVetor[i].nome, nome) == 0) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+// Função para buscar um item no vetor (busca binária)
+int buscarBinariaVetor(char* nome) {
+    int inicio = 0;
+    int fim = quantidadeItensVetor - 1;
+    comparacoesVetor = 0;
+    while (inicio <= fim) {
+        int meio = (inicio + fim) / 2;
+        comparacoesVetor++;
+        if (strcmp(mochilaVetor[meio].nome, nome) == 0) {
+            return meio;
+        } else if (strcmp(mochilaVetor[meio].nome, nome) < 0) {
+            inicio = meio + 1;
+        } else {
+            fim = meio - 1;
+        }
+    }
+    return -1;
+}
+
+
+lista_encadeada.c
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+// Definição da struct Item
+typedef struct {
+    char nome[30];
+    char tipo[20];
+    int quantidade;
+} Item;
+
+// Definição da struct No
+typedef struct No {
+    Item dados;
+    struct No* proximo;
+} No;
+
+// Ponteiro para o início da lista
+No* inicioLista = NULL;
+int comparacoesLista = 0;
+
+// Função para inserir um item na lista
+void inserirItemLista(Item item) {
+    No* novo = (No*) malloc(sizeof(No));
+    novo->dados = item;
+    novo->proximo = inicioLista;
+    inicioLista = novo;
+}
+
+// Função para remover um item da lista
+void removerItemLista(char* nome) {
+    No* atual = inicioLista;
+    No* anterior = NULL;
+    while (atual != NULL) {
+        if (strcmp(atual->dados.nome, nome) == 0) {
+            if (anterior == NULL) {
+                inicioLista = atual->proximo;
+            } else {
+                anterior->proximo = atual->proximo;
+            }
+            free(atual);
+            return;
+        }
+        anterior = atual;
+        atual = atual->proximo;
+    }
+}
+
+// Função para buscar um item na lista (busca sequencial)
+int buscarSequencialLista(char* nome) {
+    comparacoesLista = 0;
+    No* atual = inicioLista;
+    int i = 0;
+    while (atual != NULL) {
+        comparacoesLista++;
+        if (strcmp(atual->dados.nome, nome) == 0) {
+            return i;
+        }
+        atual = atual->proximo;
+        i++;
+    }
+    return -1;
+}
+
+
+main.c
+
+#include <stdio.h>
+#include "vetor.c"
+#include "lista_encadeada.c"
+
+int main() {
+    int opcao;
+    do {
+        printf("1 - Vetor\n");
+        printf("2 - Lista Encadeada\n");
+        printf("3 - Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+
+        switch (opcao) {
+            case 1:
+                // Operações com vetor
+                break;
+            case 2:
+                // Operações com lista encadeada
+                break;
+            case 3:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida!\n");
+        }
+    } while (opcao != 3);
+
+    return 0;
+}

@@ -1,0 +1,172 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+
+// Definição da struct Componente
+typedef struct {
+    char nome[30];
+    char tipo[20];
+    int prioridade;
+} Componente;
+
+// Função para trocar dois componentes
+void trocar(Componente* a, Componente* b) {
+    Componente temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Função para ordenar por nome (Bubble Sort)
+void bubbleSortNome(Componente* componentes, int tamanho) {
+    int comparacoes = 0;
+    clock_t inicio = clock();
+    for (int i = 0; i < tamanho - 1; i++) {
+        for (int j = 0; j < tamanho - i - 1; j++) {
+            comparacoes++;
+            if (strcmp(componentes[j].nome, componentes[j + 1].nome) > 0) {
+                trocar(&componentes[j], &componentes[j + 1]);
+            }
+        }
+    }
+    clock_t fim = clock();
+    printf("Bubble Sort por Nome: %d comparações, Tempo: %f segundos\n", comparacoes, (double)(fim - inicio) / CLOCKS_PER_SEC);
+}
+
+// Função para ordenar por tipo (Insertion Sort)
+void insertionSortTipo(Componente* componentes, int tamanho) {
+    int comparacoes = 0;
+    clock_t inicio = clock();
+    for (int i = 1; i < tamanho; i++) {
+        Componente chave = componentes[i];
+        int j = i - 1;
+        while (j >= 0 && strcmp(componentes[j].tipo, chave.tipo) > 0) {
+            comparacoes++;
+            componentes[j + 1] = componentes[j];
+            j--;
+        }
+        componentes[j + 1] = chave;
+    }
+    clock_t fim = clock();
+    printf("Insertion Sort por Tipo: %d comparações, Tempo: %f segundos\n", comparacoes, (double)(fim - inicio) / CLOCKS_PER_SEC);
+}
+
+// Função para ordenar por prioridade (Selection Sort)
+void selectionSortPrioridade(Componente* componentes, int tamanho) {
+    int comparacoes = 0;
+    clock_t inicio = clock();
+    for (int i = 0; i < tamanho - 1; i++) {
+        int menor = i;
+        for (int j = i + 1; j < tamanho; j++) {
+            comparacoes++;
+            if (componentes[j].prioridade < componentes[menor].prioridade) {
+                menor = j;
+            }
+        }
+        if (menor != i) {
+            trocar(&componentes[i], &componentes[menor]);
+        }
+    }
+    clock_t fim = clock();
+    printf("Selection Sort por Prioridade: %d comparações, Tempo: %f segundos\n", comparacoes, (double)(fim - inicio) / CLOCKS_PER_SEC);
+}
+
+// Função para buscar um componente por nome (Busca Binária)
+int buscaBinariaNome(Componente* componentes, int tamanho, char* nome) {
+    int inicio = 0;
+    int fim = tamanho - 1;
+    int comparacoes = 0;
+    while (inicio <= fim) {
+        int meio = (inicio + fim) / 2;
+        comparacoes++;
+        if (strcmp(componentes[meio].nome, nome) == 0) {
+            printf("Busca Binária por Nome: %d comparações\n", comparacoes);
+            return meio;
+        } else if (strcmp(componentes[meio].nome, nome) < 0) {
+            inicio = meio + 1;
+        } else {
+            fim = meio - 1;
+        }
+    }
+    printf("Busca Binária por Nome: %d comparações\n", comparacoes);
+    return -1;
+}
+
+// Função para mostrar os componentes
+void mostrarComponentes(Componente* componentes, int tamanho) {
+    for (int i = 0; i < tamanho; i++) {
+        printf("Nome: %s, Tipo: %s, Prioridade: %d\n", componentes[i].nome, componentes[i].tipo, componentes[i].prioridade);
+    }
+}
+
+int main() {
+    Componente componentes[20];
+    int tamanho = 0;
+    int opcao;
+
+    do {
+        printf("1 - Cadastrar Componente\n");
+        printf("2 - Ordenar por Nome\n");
+        printf("3 - Ordenar por Tipo\n");
+        printf("4 - Ordenar por Prioridade\n");
+        printf("5 - Buscar Componente por Nome\n");
+        printf("6 - Mostrar Componentes\n");
+        printf("7 - Sair\n");
+        printf("Escolha uma opção: ");
+        scanf("%d", &opcao);
+        getchar(); // Limpa o buffer do teclado
+
+        switch (opcao) {
+            case 1:
+                printf("Digite o nome do componente: ");
+                fgets(componentes[tamanho].nome, sizeof(componentes[tamanho].nome), stdin);
+                componentes[tamanho].nome[strcspn(componentes[tamanho].nome, "\n")] = 0;
+
+                printf("Digite o tipo do componente: ");
+                fgets(componentes[tamanho].tipo, sizeof(componentes[tamanho].tipo), stdin);
+                componentes[tamanho].tipo[strcspn(componentes[tamanho].tipo, "\n")] = 0;
+
+                printf("Digite a prioridade do componente: ");
+                scanf("%d", &componentes[tamanho].prioridade);
+                getchar(); // Limpa o buffer do teclado
+
+                tamanho++;
+                break;
+            case 2:
+                bubbleSortNome(componentes, tamanho);
+                mostrarComponentes(componentes, tamanho);
+                break;
+            case 3:
+                insertionSortTipo(componentes, tamanho);
+                mostrarComponentes(componentes, tamanho);
+                break;
+            case 4:
+                selectionSortPrioridade(componentes, tamanho);
+                mostrarComponentes(componentes, tamanho);
+                break;
+            case 5:
+                printf("Digite o nome do componente a ser buscado: ");
+                char nome[30];
+                fgets(nome, sizeof(nome), stdin);
+                nome[strcspn(nome, "\n")] = 0;
+
+                int indice = buscaBinariaNome(componentes, tamanho, nome);
+                if (indice != -1) {
+                    printf("Componente encontrado: Nome: %s, Tipo: %s, Prioridade: %d\n", componentes[indice].nome, componentes[indice].tipo, componentes[indice].prioridade);
+                } else {
+                    printf("Componente não encontrado!\n");
+                }
+                break;
+            case 6:
+                mostrarComponentes(componentes, tamanho);
+                break;
+            case 7:
+                printf("Saindo...\n");
+                break;
+            default:
+                printf("Opção inválida!\n");
+        }
+    } while (opcao != 7);
+
+    return 0;
+}
